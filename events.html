@@ -290,10 +290,17 @@
                 });
 
                 const results = await Promise.allSettled(promises);
-                return results
+                const events = results
                     .filter(result => result.status === 'fulfilled' && result.value !== null)
                     .map(result => result.value)
                     .sort((a, b) => a.startDate - b.startDate);
+                
+                // Lade Assignment-Dateien für alle Events
+                for (const event of events) {
+                    await this.loadAssignmentsForEvent(event);
+                }
+                
+                return events;
             }
 
             async loadAssignmentsForEvent(event) {
